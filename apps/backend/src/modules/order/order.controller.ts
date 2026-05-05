@@ -4,11 +4,11 @@ import { PlaceOrderDto } from './dto/place-order.dto';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
 import { type AuthRequest } from '../auth/interfaces/auth-request.interface';
 
-@Controller('order')
+@Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('place-order')
+  @Post()
   @UseGuards(SupabaseAuthGuard)
   async placeOrder(
     @Req() req: AuthRequest,
