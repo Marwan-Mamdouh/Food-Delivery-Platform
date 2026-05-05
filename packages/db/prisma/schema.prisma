@@ -7,8 +7,88 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model for basic compilation
-model User {
-  id    String @id @default(uuid())
-  email String @unique
+model UserProfile {
+  id        String   @id // This will be the Supabase Auth UUID
+  email     String   @unique
+  name      String?
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+model Restaurant {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  menuItems MenuItem[]
+  orders    Order[]
+
+  @@map("restaurants")
+}
+
+model MenuItem {
+  id           String     @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  stock        Int        @default(0)
+  category     String?
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  orderItems OrderItem[]
+
+  @@index([restaurantId])
+  @@map("menu_items")
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  userId        String
+  user          UserProfile   @relation(fields: [userId], references: [id])
+  restaurantId  String
+  restaurant    Restaurant    @relation(fields: [restaurantId], references: [id])
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  totalPrice    Decimal       @db.Decimal(10, 2)
+  address       String // Captured at time of order
+  items         OrderItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  price      Float
+  createdAt  DateTime @default(now())
+
+  @@index([orderId])
+  @@index([menuItemId])
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  OUT_FOR_DELIVERY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
 }
