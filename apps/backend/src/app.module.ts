@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RestaurantModule } from './modules/restaurant/restaurant.module';
-import { MenuItemModule } from './modules/menu-item/menu-item.module';
+import { MenuModule } from './modules/menu/menu.module';
 import { OrderModule } from './modules/order/order.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,7 +20,7 @@ import supabaseConfig from './config/supabase.config';
     PrismaModule,
     AuthModule,
     RestaurantModule,
-    MenuItemModule,
+    MenuModule,
     OrderModule,
   ],
   controllers: [AppController],
