@@ -11,7 +11,7 @@ export class RestaurantService {
    * @returns A promise that resolves to an array of strictly typed Restaurant objects.
    */
   async findAll(): Promise<Restaurant[]> {
-    return this.prisma.restaurant.findMany({
+    return await this.prisma.restaurant.findMany({
       orderBy: {
         createdAt: 'desc',
       },

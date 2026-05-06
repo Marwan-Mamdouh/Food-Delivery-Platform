@@ -13,7 +13,7 @@ export class OrderController {
   async placeOrder(
     @Req() req: AuthRequest,
     @Body() placeOrderDto: PlaceOrderDto,
-  ) {
+  ): Promise<any> {
     // The user payload is attached to the request by the SupabaseStrategy
     const userId = req.user.userId;
     return this.orderService.placeOrder(userId, placeOrderDto);

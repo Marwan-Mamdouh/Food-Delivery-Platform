@@ -11,7 +11,7 @@ export class OrderService {
    * Places an order securely by calculating prices server-side
    * and executing all creations within a single transaction.
    */
-  async placeOrder(userId: string, placeOrderDto: PlaceOrderDto) {
+  async placeOrder(userId: string, placeOrderDto: PlaceOrderDto): Promise<any> {
     const { restaurantId, address, items } = placeOrderDto;
 
     // 1. Fetch menu items to verify existence, restaurant match, and secure prices.
@@ -53,7 +53,7 @@ export class OrderService {
 
     // 4. Create Order and nested OrderItems in a single Prisma transaction
     const createdOrder = await this.prisma.$transaction(async (tx) => {
-      return tx.order.create({
+      return await tx.order.create({
         data: {
           userId,
           restaurantId,
