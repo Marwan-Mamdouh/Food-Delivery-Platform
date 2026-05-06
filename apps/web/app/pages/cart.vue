@@ -125,13 +125,18 @@ const formatCurrency = (value: number) => {
 
 const handleAddItem = (item: CartItem) => {
   // Pass the item back to addItem. Since it's already in the cart, restaurantId check will pass.
-  // We need to cast back to MenuItem or just pass properties
   addItem({
     id: item.id,
     name: item.name,
-    price: item.price,
-    restaurantId: item.restaurantId
-  } as any, item.image)
+    price: item.price, 
+    restaurantId: item.restaurantId,
+    description: '', // Required by MenuItem type
+    stock: 0,
+    category: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    image: item.image
+  }, item.image)
 }
 
 const handleRemoveAll = (itemId: string) => {

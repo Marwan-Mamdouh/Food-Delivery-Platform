@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PlaceOrderDto } from './dto/place-order.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { PaymentStatus, OrderStatus } from '@food-delivery/db';
+import { PaymentStatus, OrderStatus, Prisma } from '@food-delivery/db';
 
 @Injectable()
 export class OrderService {
@@ -31,7 +31,7 @@ export class OrderService {
 
     // 2. Calculate the total price securely
     let totalPrice = 0;
-    const priceMap: Record<string, any> = {};
+    const priceMap: Record<string, Prisma.Decimal> = {};
 
     for (const dbItem of menuItems) {
       priceMap[dbItem.id] = dbItem.price;

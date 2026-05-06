@@ -81,8 +81,18 @@ import { ref, computed } from 'vue'
 const { addItem, restaurantId, clearCart } = useCart()
 const showError = ref(false)
 
+interface MockMenuItem {
+  id: string
+  name: string
+  description: string
+  price: number
+  restaurantId: string
+  restaurantName: string
+  image: string
+}
+
 // Mock Data
-const mockMenu = [
+const mockMenu: MockMenuItem[] = [
   {
     id: '1',
     name: 'Margherita Pizza',
@@ -122,7 +132,7 @@ const mockMenu = [
 ]
 
 const groupedMenu = computed(() => {
-  const groups: Record<string, { name: string, items: any[] }> = {}
+  const groups: Record<string, { name: string, items: MockMenuItem[] }> = {}
   mockMenu.forEach(item => {
     if (!groups[item.restaurantId]) {
       groups[item.restaurantId] = { name: item.restaurantName, items: [] }
@@ -138,7 +148,7 @@ const currentRestaurantName = computed(() => {
   return item ? item.restaurantName : 'Selected Restaurant'
 })
 
-const handleAddItem = (item: any) => {
+const handleAddItem = (item: MockMenuItem) => {
   const res = addItem(item, item.image)
   if (!res.success && res.error === 'DIFFERENT_RESTAURANT') {
     showError.value = true
