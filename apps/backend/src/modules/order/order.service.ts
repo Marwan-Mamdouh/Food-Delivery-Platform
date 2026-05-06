@@ -31,13 +31,14 @@ export class OrderService {
 
     // 2. Calculate the total price securely
     let totalPrice = 0;
-    const priceMap: Record<string, number> = {};
+    const priceMap: Record<string, any> = {};
 
     for (const dbItem of menuItems) {
       priceMap[dbItem.id] = dbItem.price;
       const requestedItem = items.find((i) => i.menuItemId === dbItem.id);
       if (requestedItem) {
-        totalPrice += dbItem.price * requestedItem.quantity;
+        // Convert to number for arithmetic operation
+        totalPrice += Number(dbItem.price) * requestedItem.quantity;
       }
     }
 

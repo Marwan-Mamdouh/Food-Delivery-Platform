@@ -32,7 +32,8 @@ model MenuItem {
   id           String     @id @default(cuid())
   name         String
   description  String?
-  price        Float
+  price        Decimal    @db.Decimal(10, 2)
+  image        String?
   stock        Int        @default(0)
   category     String?
   restaurantId String
@@ -70,7 +71,7 @@ model OrderItem {
   menuItemId String
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
   quantity   Int
-  price      Float
+  price      Decimal  @db.Decimal(10, 2)
   createdAt  DateTime @default(now())
 
   @@index([orderId])
