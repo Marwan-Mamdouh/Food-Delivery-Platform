@@ -5,10 +5,11 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
-    "start": "node dist/main",
+    "start": "node dist/main.js",
     "test": "jest",
     "lint": "eslint src",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

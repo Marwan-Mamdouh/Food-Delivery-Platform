@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { MenuItem } from '@food-delivery/db';
+import { PrismaService } from '../prisma/prisma.service.js';
+import type { MenuItem } from '@food-delivery/db';
 
 @Injectable()
 export class MenuService {
@@ -11,7 +11,9 @@ export class MenuService {
    * @param restaurantId The UUID of the restaurant.
    * @returns A strictly typed Record mapping category strings to arrays of MenuItems.
    */
-  async getMenuForRestaurant(restaurantId: string): Promise<Record<string, MenuItem[]>> {
+  async getMenuForRestaurant(
+    restaurantId: string,
+  ): Promise<Record<string, MenuItem[]>> {
     const items = await this.prisma.menuItem.findMany({
       where: {
         restaurantId,
@@ -23,11 +25,11 @@ export class MenuService {
 
     // Group items by category
     const categorizedMenu: Record<string, MenuItem[]> = {};
-    
+
     for (const item of items) {
       // Use 'Uncategorized' if the category is null
       const category = item.category || 'Uncategorized';
-      
+
       if (!categorizedMenu[category]) {
         categorizedMenu[category] = [];
       }

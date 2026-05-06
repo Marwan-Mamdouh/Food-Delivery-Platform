@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { PlaceOrderDto } from './dto/place-order.dto';
-import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
-import { type AuthRequest } from '../auth/interfaces/auth-request.interface';
+import { OrderService } from './order.service.js';
+import { PlaceOrderDto } from './dto/place-order.dto.js';
+import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
+import { type AuthRequest } from '../auth/interfaces/auth-request.interface.js';
 
 @Controller('orders')
 export class OrderController {

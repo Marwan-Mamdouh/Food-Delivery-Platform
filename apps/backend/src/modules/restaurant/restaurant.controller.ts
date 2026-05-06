@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { RestaurantService } from './restaurant.service';
-import { Restaurant } from '@food-delivery/db';
+import { RestaurantService } from './restaurant.service.js';
+import type { Restaurant } from '@food-delivery/db';
 
 @Controller('restaurant')
 export class RestaurantController {

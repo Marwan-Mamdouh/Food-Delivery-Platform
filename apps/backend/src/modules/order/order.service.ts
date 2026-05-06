@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PlaceOrderDto } from './dto/place-order.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { PlaceOrderDto } from './dto/place-order.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { PaymentStatus, OrderStatus } from '@food-delivery/db';
 
 @Injectable()

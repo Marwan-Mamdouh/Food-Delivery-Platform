@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './modules/prisma/prisma.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { RestaurantModule } from './modules/restaurant/restaurant.module';
-import { MenuModule } from './modules/menu/menu.module';
-import { OrderModule } from './modules/order/order.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import databaseConfig from './config/database.config';
-import supabaseConfig from './config/supabase.config';
+import { PrismaModule } from './modules/prisma/prisma.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { RestaurantModule } from './modules/restaurant/restaurant.module.js';
+import { MenuModule } from './modules/menu/menu.module.js';
+import { OrderModule } from './modules/order/order.module.js';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import databaseConfig from './config/database.config.js';
+import supabaseConfig from './config/supabase.config.js';
 
 @Module({
   imports: [
