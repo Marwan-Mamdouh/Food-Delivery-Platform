@@ -1,95 +1,123 @@
-# FoodieFlow - Professional Food Delivery Platform
+# 🍱 FoodieFlow - Enterprise Food Delivery Ecosystem
 
-FoodieFlow is a modern, scalable, and modular food delivery ecosystem built with a focus on architectural integrity and developer experience. This project demonstrates a robust implementation of a simplified food delivery web platform, connecting restaurants with customers through a seamless, authenticated API.
+[![License: UNLICENSED](https://img.shields.io/badge/License-UNLICENSED-red.svg)](LICENSE)
+[![NestJS](https://img.shields.io/badge/Backend-NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Nuxt](https://img.shields.io/badge/Frontend-Nuxt-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com/)
+[![Prisma](https://img.shields.io/badge/Database-Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![pnpm](https://img.shields.io/badge/Monorepo-pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-## 🚀 Architectural Overview
-
-The project is structured as a **Monorepo** using `pnpm` workspaces, ensuring clean separation of concerns between business logic, database management, and shared resources.
-
-### Tech Stack
-- **Backend:** [NestJS](https://nestjs.com/) (TypeScript) - Leveraging Dependency Injection and a modular architecture.
-- **Database & ORM:** [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/) - Type-safe database queries and automated migrations.
-- **Authentication:** [Supabase Auth](https://supabase.com/auth) with Passport.js JWT strategy.
-- **Infrastructure:** Monorepo management via [pnpm](https://pnpm.io/).
+**FoodieFlow** is a sophisticated, full-stack food delivery platform engineered for scalability, maintainability, and exceptional developer experience. Built as a high-performance **Monorepo**, it demonstrates modern software engineering patterns including Domain-Driven Design (DDD) principles, end-to-end type safety, and a modular architecture.
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Architectural Excellence
+
+This project isn't just a simple web app; it's a blueprint for a production-ready ecosystem.
+
+-   **Monorepo Strategy:** Managed via `pnpm` workspaces, enabling seamless code sharing between the backend, frontend, and database layers while maintaining strict boundaries.
+-   **Type-Safe Persistence:** Leveraging **Prisma ORM** with **PostgreSQL**, ensuring that every data interaction is validated at compile-time.
+-   **Unified Identity Management:** Integrates **Supabase Auth** with a custom NestJS Passport strategy, providing enterprise-grade security with minimal friction.
+-   **Modular NestJS Backend:** A highly decoupled API structure where each domain (Order, Menu, Restaurant) is an independent, testable module.
+-   **Modern Frontend:** A reactive, SEO-friendly UI powered by **Nuxt 3** and styled with **Tailwind CSS**.
+
+---
+
+## 🛠️ Tech Stack & Tools
+
+| Layer | Technology | Key Features |
+| :--- | :--- | :--- |
+| **Backend** | [NestJS](https://nestjs.com/) | Dependency Injection, Validation Pipes, Global Filters |
+| **Frontend** | [Nuxt 3](https://nuxt.com/) | Vue 3, Nitro Server, SSR/SSG Capabilities |
+| **Database** | [Prisma](https://www.prisma.io/) + [PostgreSQL](https://www.postgresql.org/) | Type-safe Client, Auto-migrations, Relational Integrity |
+| **Auth** | [Supabase](https://supabase.com/) | JWT-based Auth, OAuth Support, Secure Identity |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first, Responsive Design, JIT Compiler |
+| **Tooling** | [pnpm](https://pnpm.io/) | Fast, disk-efficient package management |
+
+---
+
+## 📂 Project Blueprint
 
 ```text
+.
 ├── apps/
-│   ├── backend/          # NestJS Core API
-│   └── frontend/         # (Placeholder for UI)
+│   ├── backend/          # NestJS Core API (Business Logic, Auth, State Machine)
+│   └── web/              # Nuxt 3 Client (Consumer & Restaurant Portal)
 ├── packages/
-│   └── db/               # Shared Database Schema (Prisma)
-├── pnpm-workspace.yaml   # Monorepo Workspace Configuration
-└── tsconfig.base.json    # Shared TypeScript Configuration
+│   ├── db/               # Shared Data Layer (Prisma Schema, Migrations, Client)
+│   └── shared/           # (Planned) Shared DTOs, Utils, and Constants
+├── pnpm-workspace.yaml   # Monorepo configuration
+└── tsconfig.base.json    # Standardized TypeScript rules
 ```
-
-### Key Modules (Backend)
-- **Auth:** Secured via Supabase JWT validation. Extracts user identities directly from the Supabase ecosystem.
-- **Restaurant:** Management of restaurant profiles and availability.
-- **Menu & Menu Items:** Granular control over restaurant offerings, categories, pricing, and stock.
-- **Order:** Complex state-machine-driven order processing (Pending -> Confirmed -> Preparing -> Out for Delivery -> Completed).
 
 ---
 
-## 🛠️ Feature Highlights
+## 🌟 High-Level Features
 
-- **Type Safety:** End-to-end TypeScript implementation ensures compile-time safety from the database layer to the API response.
-- **Modular Design:** Each domain (Auth, Order, Restaurant) is encapsulated in its own NestJS module, making the codebase easy to maintain and scale.
-- **Secure by Design:** All sensitive endpoints are protected by custom JWT Guards, validating tokens issued by Supabase.
-- **Database Integrity:** Relational schema with strict foreign key constraints, cascading deletes for menu items, and indexed lookups for performance.
-- **Global Error Handling:** Integrated Prisma Exception Filters to transform database errors into user-friendly HTTP responses.
+### 🔐 Secure Authentication
+Robust user management powered by Supabase. The backend validates JWTs from the Supabase ecosystem, ensuring that only authenticated users can place orders or manage menus.
+
+### 🏪 Restaurant & Menu Management
+A comprehensive system for restaurants to manage their digital storefront.
+-   **Dynamic Menus:** Organize items by categories with real-time stock tracking.
+-   **Relational Integrity:** Cascading deletes and strict foreign keys prevent orphaned data.
+
+### 🛒 Advanced Order Workflow
+A state-machine-driven order processing system that tracks the lifecycle of a meal:
+`PENDING` ➔ `CONFIRMED` ➔ `PREPARING` ➔ `OUT_FOR_DELIVERY` ➔ `COMPLETED`
+
+### 🛡️ Production-Grade Reliability
+-   **Global Validation:** Every API request is sanitized via `class-validator`.
+-   **Error Handling:** Custom Prisma Exception Filters transform database errors into semantic HTTP responses.
+-   **CORS & Security:** Pre-configured for cross-origin resource sharing with frontend applications.
 
 ---
 
 ## 🚥 Getting Started
 
 ### Prerequisites
-- Node.js (v20+ recommended)
-- pnpm (v9+)
-- A PostgreSQL instance (Local or Cloud)
-- Supabase Project (for Authentication)
+-   **Node.js:** v20 or higher
+-   **pnpm:** v9 or higher
+-   **PostgreSQL:** A running instance (Local or Supabase)
 
 ### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/Food-Delivery-Platform.git
-   cd Food-Delivery-Platform
-   ```
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/your-username/Food-Delivery-Platform.git
+    cd Food-Delivery-Platform
+    ```
 
-2. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
+2.  **Install Dependencies:**
+    ```bash
+    pnpm install
+    ```
 
-3. **Configure Environment Variables:**
-   Create a `.env` file in `apps/backend/` and `packages/db/`:
-   ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/food_delivery"
-   SUPABASE_JWT_SECRET="your_supabase_jwt_secret"
-   ```
+3.  **Environment Setup:**
+    Configure `.env` files in `apps/backend/` and `packages/db/`:
+    ```env
+    DATABASE_URL="postgresql://user:password@localhost:5432/food_delivery"
+    SUPABASE_JWT_SECRET="your_secret_here"
+    ```
 
-4. **Initialize the Database:**
-   ```bash
-   pnpm run db:generate
-   pnpm run db:push
-   ```
+4.  **Database Synchronization:**
+    ```bash
+    pnpm run db:generate
+    pnpm run db:push
+    ```
 
-5. **Run the Application:**
-   ```bash
-   pnpm run dev
-   ```
+5.  **Launch Development Environment:**
+    ```bash
+    pnpm run dev
+    ```
 
 ---
 
 ## 📈 Future Roadmap
-- [ ] **Frontend Implementation:** A React/Next.js dashboard for restaurants and a customer-facing portal.
-- [ ] **Real-time Updates:** Integrating WebSockets for live order tracking.
-- [ ] **Payment Integration:** Connecting Stripe or PayPal for secure transactions.
-- [ ] **Driver Module:** A dedicated workflow for delivery partners.
+- [ ] **Real-time Order Tracking:** Integration with WebSockets/Socket.io.
+- [ ] **Payment Gateway:** Stripe/PayPal integration for seamless checkouts.
+- [ ] **Dashboard Analytics:** Visualizing sales and popular menu items for restaurants.
+- [ ] **Mobile App:** Expo/React Native version sharing the same shared logic.
 
 ---
 
