@@ -22,10 +22,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@food-delivery/db": ["../../packages/db/src/index.ts"]
-    }
+    "noFallthroughCasesInSwitch": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]

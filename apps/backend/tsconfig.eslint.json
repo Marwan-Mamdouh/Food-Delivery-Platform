@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@food-delivery/db": ["../../packages/db/src/index.ts"]
+    }
+  }
+}
