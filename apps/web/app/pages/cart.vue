@@ -56,6 +56,26 @@
             </div>
           </li>
         </ul>
+
+        <!-- Delivery Address -->
+        <div class="mt-10 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Delivery Details</h3>
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700">Delivery Address</label>
+            <div class="mt-1">
+              <textarea
+                id="address"
+                name="address"
+                rows="3"
+                v-model="address"
+                class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                placeholder="Enter your full delivery address"
+                :class="{ 'border-red-300': addressError }"
+              ></textarea>
+            </div>
+            <p v-if="addressError" class="mt-2 text-sm text-red-600">{{ addressError }}</p>
+          </div>
+        </div>
       </section>
 
       <!-- Order Summary -->
@@ -79,8 +99,17 @@
           </div>
         </dl>
 
+        <div v-if="errorMessage" class="mt-4 p-3 bg-red-50 text-red-700 text-sm rounded-md">
+          {{ errorMessage }}
+        </div>
+
         <div class="mt-6">
-          <BaseButton custom-class="w-full" size="lg">
+          <BaseButton 
+            custom-class="w-full" 
+            size="lg" 
+            :loading="isLoading" 
+            @click="handleCheckout"
+          >
             Checkout
           </BaseButton>
         </div>
@@ -112,9 +141,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { CartItem } from '~/composables/useCart'
 
-const { items, subtotal, formattedTotal, addItem, removeItem, clearCart } = useCart()
+const { items, subtotal, formattedTotal, restaurantId, addItem, removeItem, clearCart } = useCart()
+const { placeOrder, isLoading, errorMessage } = useOrder()
+const user = useSupabaseUser()
+
+const address = ref('')
+const addressError = ref<string | null>(null)
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -146,6 +181,38 @@ const handleRemoveAll = (itemId: string) => {
     for (let i = 0; i < item.quantity; i++) {
       removeItem(itemId)
     }
+  }
+}
+
+const handleCheckout = async () => {
+  if (!user.value) {
+    alert('Please sign in to place an order.')
+    return
+  }
+
+  addressError.value = null
+  if (!address.value.trim()) {
+    addressError.value = 'Delivery address is required.'
+    return
+  }
+
+  if (!restaurantId.value) return
+
+  try {
+    const orderItems = items.value.map(item => ({
+      menuItemId: item.id,
+      quantity: item.quantity
+    }))
+
+    const order = await placeOrder(restaurantId.value, address.value, orderItems)
+
+    if (order.paymentStatus === 'PAID') {
+      clearCart()
+      navigateTo('/order-success')
+    }
+  } catch (err) {
+    // Error is handled by useOrder (errorMessage ref)
+    console.error(err);
   }
 }
 
