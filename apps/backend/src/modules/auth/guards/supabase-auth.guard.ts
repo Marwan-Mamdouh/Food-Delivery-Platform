@@ -10,11 +10,13 @@ export class SupabaseAuthGuard extends AuthGuard('supabase') {
     if (err) {
       throw err;
     }
-    
+
     if (!user) {
-      throw new UnauthorizedException('Invalid or missing authentication token');
+      throw new UnauthorizedException(
+        'Invalid or missing authentication token',
+      );
     }
-    
+
     return user;
   }
 }

@@ -98,9 +98,7 @@ export class OrderService {
    * @param userId The ID of the user.
    * @returns A list of orders with nested details.
    */
-  async findAllForUser(
-    userId: string,
-  ): Promise<
+  async findAllForUser(userId: string): Promise<
     Prisma.OrderGetPayload<{
       include: { restaurant: true; items: { include: { menuItem: true } } };
     }>[]

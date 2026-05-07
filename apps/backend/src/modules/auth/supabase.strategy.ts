@@ -22,6 +22,10 @@ interface Jwk {
   [key: string]: string;
 }
 
+interface JwksResponse {
+  keys: Jwk[];
+}
+
 const JWKS_CACHE_TTL_MS = 60_000;
 let jwksCache: { keys: Jwk[]; fetchedAt: number } | null = null;
 
@@ -50,12 +54,12 @@ async function fetchJwks(projectUrl: string) {
     throw new Error(`Unable to load JWKS from ${jwksUrl}: ${response.status}`);
   }
 
-  const body = await response.json();
+  const body = (await response.json()) as JwksResponse;
   if (!Array.isArray(body.keys)) {
     throw new Error('Invalid JWKS response');
   }
 
-  jwksCache = { keys: body.keys as Jwk[], fetchedAt: Date.now() };
+  jwksCache = { keys: body.keys, fetchedAt: Date.now() };
   return jwksCache.keys;
 }
 
@@ -99,7 +103,9 @@ export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
           .then((keys) => {
             const jwk = keys.find((key) => key.kid === header.kid);
             if (!jwk) {
-              return done(new Error(`JWKS key not found for kid=${header.kid}`));
+              return done(
+                new Error(`JWKS key not found for kid=${header.kid}`),
+              );
             }
             const pem = jwkToPem(jwk);
             done(null, pem);
@@ -122,14 +128,14 @@ export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
     this.expectedIssuer = issuer;
   }
 
-  private expectedIssuer: string;
+  private readonly expectedIssuer: string;
 
   /**
    * Validates the JWT payload and extracts user data.
    * @param payload The decoded JWT payload.
    * @returns The user data to be attached to the request.
    */
-  async validate(payload: SupabaseJwtPayload) {
+  validate(payload: SupabaseJwtPayload) {
     return {
       userId: payload.sub,
       email: payload.email,
