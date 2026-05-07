@@ -15,7 +15,11 @@ export class OrderController {
     @Body() placeOrderDto: PlaceOrderDto,
   ): Promise<any> {
     // The user payload is attached to the request by the SupabaseStrategy
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new Error('User ID not found in authenticated request');
+    }
+    
     return this.orderService.placeOrder(userId, placeOrderDto);
   }
 }

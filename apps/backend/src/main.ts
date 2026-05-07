@@ -27,9 +27,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const port = configService.get<number>('PORT') || 5000;
+
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
 }
+
 bootstrap().catch((err) => {
   console.error(err);
   process.exit(1);
