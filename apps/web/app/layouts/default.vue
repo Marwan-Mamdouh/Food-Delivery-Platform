@@ -33,26 +33,42 @@
 							</NuxtLink>
 						</div>
 					</div>
-					          <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-            <NuxtLink to="/cart" class="relative p-2 text-gray-500 hover:text-primary-600 transition-colors">
-              <span class="sr-only">View cart</span>
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-              </svg>
-              <span v-if="itemCount > 0" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary-600 rounded-full">
-                {{ itemCount }}
-              </span>
-            </NuxtLink>
-            <BaseButton v-if="!user" @click="login">
-              Sign In
-            </BaseButton>
-            <div v-else class="flex items-center space-x-4">
-              <span class="text-sm text-gray-600 font-medium">{{ user.email }}</span>
-              <BaseButton variant="secondary" @click="logout">
-                Sign Out
-              </BaseButton>
-            </div>
-          </div>
+					<div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+						<NuxtLink
+							to="/cart"
+							class="relative p-2 text-gray-500 hover:text-primary-600 transition-colors"
+						>
+							<span class="sr-only">View cart</span>
+							<svg
+								class="h-6 w-6"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+								/>
+							</svg>
+							<span
+								v-if="itemCount > 0"
+								class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary-600 rounded-full"
+							>
+								{{ itemCount }}
+							</span>
+						</NuxtLink>
+						<BaseButton v-if="!user" @click="login"> Sign In </BaseButton>
+						<div v-else class="flex items-center space-x-4">
+							<span class="text-sm text-gray-600 font-medium">{{
+								user.email
+							}}</span>
+							<BaseButton variant="secondary" @click="logout">
+								Sign Out
+							</BaseButton>
+						</div>
+					</div>
 
 					<!-- Mobile menu button -->
 					<div class="flex items-center sm:hidden">
@@ -125,19 +141,25 @@
 						>Cart ({{ itemCount }})</NuxtLink
 					>
 				</div>
-				        <div class="pt-4 pb-3 border-t border-gray-200">
-          <div v-if="!user" class="px-4">
-            <BaseButton @click="login" custom-class="w-full">
-              Sign In
-            </BaseButton>
-          </div>
-          <div v-else class="px-4 space-y-3">
-            <div class="text-base font-medium text-gray-800">{{ user.email }}</div>
-            <BaseButton variant="secondary" @click="logout" custom-class="w-full">
-              Sign Out
-            </BaseButton>
-          </div>
-        </div>
+				<div class="pt-4 pb-3 border-t border-gray-200">
+					<div v-if="!user" class="px-4">
+						<BaseButton @click="login" custom-class="w-full">
+							Sign In
+						</BaseButton>
+					</div>
+					<div v-else class="px-4 space-y-3">
+						<div class="text-base font-medium text-gray-800">
+							{{ user.email }}
+						</div>
+						<BaseButton
+							variant="secondary"
+							@click="logout"
+							custom-class="w-full"
+						>
+							Sign Out
+						</BaseButton>
+					</div>
+				</div>
 			</div>
 		</nav>
 
@@ -166,10 +188,18 @@ const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const { itemCount } = useCart();
 
-// Dummy login/logout for now, replace with actual flows later
-const login = () => {
-	// We can implement actual Auth modal or redirect later
-	console.log("Login clicked");
+const login = async () => {
+	const { error } = await supabase.auth.signInWithOAuth({
+		provider: "google",
+		options: {
+			redirectTo: globalThis.location.href,
+		},
+	});
+
+	if (error) {
+		console.error("Supabase sign-in failed:", error.message);
+		return;
+	}
 };
 
 const logout = async () => {
