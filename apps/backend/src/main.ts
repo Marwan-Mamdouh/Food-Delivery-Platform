@@ -23,7 +23,10 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
-  const port = configService.get<number>('PORT') || 3000;
+  // Prefix all backend routes with /api
+  app.setGlobalPrefix('api');
+
+  const port = configService.get<number>('PORT') || 5000;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
 }

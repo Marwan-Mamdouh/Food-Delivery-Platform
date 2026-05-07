@@ -31,14 +31,20 @@ export const useOrder = () => {
       throw new Error(errorMessage.value)
     }
 
+    const accessToken = session.value?.access_token
+    if (!accessToken) {
+      errorMessage.value = 'Unable to place order: no authenticated session token available.'
+      throw new Error(errorMessage.value)
+    }
+
     isLoading.value = true
     errorMessage.value = null
 
     try {
-      const response = await $fetch<any>(`${config.public.apiBaseUrl}/orders`, {
+      const response = await $fetch<any>(`${config.public.apiBaseUrl}/api/orders`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.value?.access_token}`
+          Authorization: `Bearer ${accessToken}`
         },
         body: {
           restaurantId,

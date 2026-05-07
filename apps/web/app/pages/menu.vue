@@ -131,8 +131,7 @@ const showError = ref(false)
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBaseUrl
 
-// 1. Fetch all restaurants
-const { data: restaurants, error: restaurantsError, refresh: refreshRestaurants } = await useFetch<Restaurant[]>(`${apiBase}/restaurant`)
+const { data: restaurants, error: restaurantsError, refresh: refreshRestaurants } = await useFetch<Restaurant[]>(`${apiBase}/api/restaurant`)
 
 // 2. Selected Restaurant State
 // Initialize with cart restaurant or the first available restaurant
@@ -142,7 +141,7 @@ const selectedRestaurantId = ref<string | null>(
 
 // 3. Fetch menu for selected restaurant
 const { data: categorizedMenu, pending: menuPending } = await useFetch<Record<string, MenuItem[]>>(() => 
-  selectedRestaurantId.value ? `${apiBase}/menu/${selectedRestaurantId.value}` : null,
+  selectedRestaurantId.value ? `${apiBase}/api/menu/${selectedRestaurantId.value}` : null,
   {
     key: `menu-${selectedRestaurantId.value}`,
     watch: [selectedRestaurantId]
