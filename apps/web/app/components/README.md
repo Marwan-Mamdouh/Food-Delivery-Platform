@@ -1,26 +1,30 @@
-# Components Documentation
+# BaseButton Component
 
-This directory contains reusable UI components for the web application.
+The `BaseButton` is a reusable, accessible button component built for the FoodieFlow frontend. It supports various visual variants, sizes, and loading states.
 
-## BaseButton (`BaseButton.vue`)
-A versatile, styled button component that supports different variants and states.
+## Props
 
-### Props
-- `variant` ('primary' | 'secondary' | 'outline' | 'ghost' | 'danger'): Defines the visual style of the button.
-- `size` ('sm' | 'md' | 'lg'): Controls the padding and text size.
-- `loading` (boolean): Displays a spinner if true.
-- `disabled` (boolean): Disables the button interaction.
-- `customClass` (string): Allows overriding or adding custom CSS classes.
+| Prop | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `variant` | `'primary' \| 'secondary' \| 'outline' \| 'ghost' \| 'danger'` | `'primary'` | Determines the visual style of the button. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Determines the button's padding and font size. |
+| `loading` | `boolean` | `false` | If `true`, shows a spinner and disables the button. |
+| `disabled` | `boolean` | `false` | If `true`, disables the button interactions. |
+| `customClass` | `string` | `''` | Additional Tailwind CSS classes to apply to the button. |
 
-### Usage
+## Usage
+
 ```vue
 <template>
-  <BaseButton variant="primary" size="lg" :loading="isSubmitting" @click="submit">
-    Submit
+  <BaseButton variant="primary" size="lg" @click="handleAction">
+    Order Now
+  </BaseButton>
+
+  <BaseButton :loading="isSubmitting" variant="danger">
+    Delete Item
   </BaseButton>
 </template>
 ```
 
-### Potential Issues & Errors
-- **Prop Overrides:** Ensure `customClass` uses Tailwind-compatible classes. Avoid conflicts that might override structural styles.
-- **Event Binding:** The component uses `v-bind="$attrs"` to pass through standard attributes; ensure that event listeners on the button element itself are not inadvertently swallowed.
+## Styling
+The button uses Tailwind CSS and includes transitions and active scale animations for better UX. Styles are defined internally via `variantClasses` and `sizeClasses` objects.
