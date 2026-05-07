@@ -11,7 +11,10 @@ export class OrderService {
    * Places an order securely by calculating prices server-side
    * and executing all creations within a single transaction.
    */
-  async placeOrder(userId: string, placeOrderDto: PlaceOrderDto): Promise<any> {
+  async placeOrder(
+    userId: string,
+    placeOrderDto: PlaceOrderDto,
+  ): Promise<Prisma.OrderGetPayload<{ include: { items: true } }>> {
     const { restaurantId, address, items } = placeOrderDto;
 
     // 1. Fetch menu items to verify existence, restaurant match, and secure prices.

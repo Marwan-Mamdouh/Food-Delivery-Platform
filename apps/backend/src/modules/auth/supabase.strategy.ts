@@ -1,4 +1,5 @@
 import { createPublicKey } from 'crypto';
+import { Request } from 'express';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -76,7 +77,7 @@ export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
     const issuer = `${projectUrl.replace(/\/$/, '')}/auth/v1`;
 
     const secretOrKeyProvider = (
-      req: any,
+      req: Request,
       rawJwtToken: string,
       done: (err: Error | null, secret?: string | Buffer) => void,
     ) => {
@@ -106,7 +107,7 @@ export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
           .catch((err) => {
             done(err instanceof Error ? err : new Error(String(err)));
           });
-      } catch (err: any) {
+      } catch (err: unknown) {
         done(err instanceof Error ? err : new Error(String(err)));
       }
     };
@@ -128,7 +129,7 @@ export class SupabaseStrategy extends PassportStrategy(Strategy, 'supabase') {
    * @param payload The decoded JWT payload.
    * @returns The user data to be attached to the request.
    */
-  async validate(payload: any) {
+  async validate(payload: SupabaseJwtPayload) {
     return {
       userId: payload.sub,
       email: payload.email,

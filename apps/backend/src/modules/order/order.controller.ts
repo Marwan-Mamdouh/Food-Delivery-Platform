@@ -3,6 +3,7 @@ import { OrderService } from './order.service.js';
 import { PlaceOrderDto } from './dto/place-order.dto.js';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard.js';
 import { type AuthRequest } from '../auth/interfaces/auth-request.interface.js';
+import { Prisma } from '@food-delivery/db';
 
 @Controller('orders')
 export class OrderController {
@@ -13,7 +14,7 @@ export class OrderController {
   async placeOrder(
     @Req() req: AuthRequest,
     @Body() placeOrderDto: PlaceOrderDto,
-  ): Promise<any> {
+  ): Promise<Prisma.OrderGetPayload<{ include: { items: true } }>> {
     // The user payload is attached to the request by the SupabaseStrategy
     const userId = req.user?.userId;
     if (!userId) {

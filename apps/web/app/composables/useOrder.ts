@@ -11,6 +11,28 @@ export interface PlaceOrderDto {
 	items: OrderItemDto[];
 }
 
+export interface OrderItem {
+	id: string;
+	orderId: string;
+	menuItemId: string;
+	quantity: number;
+	price: string | number;
+	createdAt: string | Date;
+}
+
+export interface Order {
+	id: string;
+	userId: string;
+	restaurantId: string;
+	status: string;
+	paymentStatus: string;
+	totalPrice: string | number;
+	address: string;
+	items: OrderItem[];
+	createdAt: string | Date;
+	updatedAt: string | Date;
+}
+
 export const useOrder = () => {
 	const isLoading = ref(false);
 	const errorMessage = ref<string | null>(null);
@@ -57,7 +79,7 @@ export const useOrder = () => {
 		errorMessage.value = null;
 
 		try {
-			const response = await $fetch<any>(
+			const response = await $fetch<Order>(
 				`${config.public.apiBaseUrl}/api/orders`,
 				{
 					method: "POST",
@@ -73,15 +95,24 @@ export const useOrder = () => {
 			);
 
 			return response;
-		} catch (err: any) {
-			if (err.status === 401 || err.statusCode === 401) {
+		} catch (err: unknown) {
+			// Type-safe error handling for $fetch (Nuxt/OhMyFetch)
+			const fetchError = err as { 
+				data?: { message?: string; paymentStatus?: string }; 
+				status?: number; 
+				statusCode?: number 
+			};
+			const errorData = fetchError.data;
+			const errorStatus = fetchError.status || fetchError.statusCode;
+
+			if (errorStatus === 401) {
 				errorMessage.value =
 					"Authorization failed. Please sign in again and retry checkout.";
-			} else if (err.data?.paymentStatus === "FAILED") {
+			} else if (errorData?.paymentStatus === "FAILED") {
 				errorMessage.value = "Payment failed. Please try again.";
 			} else {
 				errorMessage.value =
-					err.data?.message || "Failed to place order. Please try again later.";
+					errorData?.message || "Failed to place order. Please try again later.";
 			}
 
 			throw err;
