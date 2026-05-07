@@ -44,7 +44,7 @@ async function main() {
       price: 250.00,
       category: 'Mains',
       restaurantId: gizaGrill.id,
-      image: 'https://images.unsplash.com/photo-1544124499-58912cbddaad?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1529692236671-f1f6e9460272?auto=format&fit=crop&q=80&w=800',
     },
     {
       id: 'item-2',
@@ -53,7 +53,7 @@ async function main() {
       price: 85.00,
       category: 'Appetizers',
       restaurantId: gizaGrill.id,
-      image: 'https://images.unsplash.com/photo-1577906030551-5916cb098007?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1577906046424-91220a233604?auto=format&fit=crop&q=80&w=800',
     },
     {
       id: 'item-3',
@@ -72,7 +72,7 @@ async function main() {
       price: 75.00,
       category: 'Appetizers',
       restaurantId: medBites.id,
-      image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
     },
     {
       id: 'item-5',
@@ -90,7 +90,7 @@ async function main() {
       price: 65.00,
       category: 'Mains',
       restaurantId: medBites.id,
-      image: 'https://images.unsplash.com/photo-1547050605-2f2688027663?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1547050605-2f37a1f50a80?auto=format&fit=crop&q=80&w=800',
     },
     {
       id: 'item-7',
@@ -99,7 +99,7 @@ async function main() {
       price: 45.00,
       category: 'Drinks',
       restaurantId: medBites.id,
-      image: 'https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=80&w=800',
     },
     // Cairo Coffee House Items
     {
@@ -109,7 +109,7 @@ async function main() {
       price: 55.00,
       category: 'Drinks',
       restaurantId: cairoCoffee.id,
-      image: 'https://images.unsplash.com/photo-1485808191679-5f63bb362819?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1000&auto=format&fit=crop',
     },
     {
       id: 'item-9',
@@ -118,7 +118,7 @@ async function main() {
       price: 90.00,
       category: 'Mains',
       restaurantId: cairoCoffee.id,
-      image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800',
+      image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=1000&auto=format&fit=crop',
     },
     {
       id: 'item-10',

@@ -9,5 +9,10 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false
   },
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
+    }
+  },
   devtools: { enabled: true }
 })

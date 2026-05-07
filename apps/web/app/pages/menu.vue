@@ -5,10 +5,51 @@
         <h1 class="text-3xl font-extrabold text-gray-900">Explore Our Menu</h1>
         <p class="mt-2 text-gray-500">Delicious meals from top restaurants, delivered fast.</p>
       </div>
-      <div v-if="restaurantId" class="bg-primary-50 px-4 py-2 rounded-lg border border-primary-100 flex items-center gap-2">
+    <div v-if="cartRestaurantId" class="bg-primary-50 px-4 py-2 rounded-lg border border-primary-100 flex items-center gap-2">
         <span class="text-sm font-medium text-primary-700">Ordering from: </span>
-        <span class="text-sm font-bold text-primary-900">{{ currentRestaurantName }}</span>
+        <span class="text-sm font-bold text-primary-900">{{ cartRestaurantName }}</span>
         <button @click="clearCart" class="ml-2 text-xs text-primary-600 hover:text-primary-700 underline font-medium">Reset</button>
+      </div>
+    </div>
+
+    <!-- Error State for Restaurants -->
+    <div v-if="restaurantsError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-8">
+      <p class="font-bold">Failed to load restaurants</p>
+      <p class="text-sm">Please make sure the backend server is running on {{ apiBase }}.</p>
+      <button @click="refreshRestaurants" class="mt-2 text-sm underline font-medium">Try again</button>
+    </div>
+
+    <!-- Restaurant Selector -->
+    <div class="mb-12">
+      <div class="sm:hidden">
+        <label for="tabs" class="sr-only">Select a restaurant</label>
+        <select 
+          id="tabs" 
+          name="tabs" 
+          class="block w-full focus:ring-primary-500 focus:border-primary-500 border-gray-300 rounded-md"
+          v-model="selectedRestaurantId"
+        >
+          <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+            {{ restaurant.name }}
+          </option>
+        </select>
+      </div>
+      <div class="hidden sm:block">
+        <nav class="flex space-x-4" aria-label="Tabs">
+          <button
+            v-for="restaurant in restaurants"
+            :key="restaurant.id"
+            @click="selectedRestaurantId = restaurant.id"
+            :class="[
+              selectedRestaurantId === restaurant.id
+                ? 'bg-primary-600 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100',
+              'px-4 py-2 font-medium text-sm rounded-lg transition-all duration-200'
+            ]"
+          >
+            {{ restaurant.name }}
+          </button>
+        </nav>
       </div>
     </div>
 
@@ -39,25 +80,31 @@
       </div>
     </Transition>
 
+    <!-- Loading State -->
+    <div v-if="menuPending" class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <p class="mt-4 text-gray-500">Loading delicious menu...</p>
+    </div>
+
     <!-- Menu Grid -->
-    <div v-for="(group, restaurantId) in groupedMenu" :key="restaurantId" class="mb-16">
+    <div v-else v-for="(items, category) in categorizedMenu" :key="category" class="mb-16">
       <div class="flex items-center gap-4 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">{{ group.name }}</h2>
+        <h2 class="text-2xl font-bold text-gray-800">{{ category }}</h2>
         <div class="h-px flex-grow bg-gray-200"></div>
       </div>
       
       <div class="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-        <div v-for="item in group.items" :key="item.id" class="group relative flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+        <div v-for="item in items" :key="item.id" class="group relative flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
           <div class="aspect-w-16 aspect-h-9 bg-gray-200 group-hover:opacity-90 transition-opacity">
-            <img :src="item.image" :alt="item.name" class="w-full h-48 object-center object-cover" />
+            <img :src="item.image || '/images/placeholder-food.jpg'" :alt="item.name" class="w-full h-48 object-center object-cover" />
           </div>
           <div class="p-6 flex-1 flex flex-col">
             <div class="flex justify-between items-start">
               <div>
                 <h3 class="text-lg font-bold text-gray-900">{{ item.name }}</h3>
-                <p class="mt-1 text-sm text-gray-500">{{ item.description }}</p>
+                <p class="mt-1 text-sm text-gray-500 line-clamp-2">{{ item.description }}</p>
               </div>
-              <p class="text-lg font-bold text-primary-600">${{ item.price.toFixed(2) }}</p>
+              <p class="text-lg font-bold text-primary-600">${{ Number(item.price).toFixed(2) }}</p>
             </div>
             <div class="mt-6">
               <BaseButton 
@@ -76,80 +123,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import type { Restaurant, MenuItem } from '@food-delivery/db'
 
-const { addItem, restaurantId, clearCart } = useCart()
+const { addItem, restaurantId: cartRestaurantId, clearCart } = useCart()
 const showError = ref(false)
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBaseUrl
 
-interface MockMenuItem {
-  id: string
-  name: string
-  description: string
-  price: number
-  restaurantId: string
-  restaurantName: string
-  image: string
-}
+// 1. Fetch all restaurants
+const { data: restaurants, error: restaurantsError, refresh: refreshRestaurants } = await useFetch<Restaurant[]>(`${apiBase}/restaurant`)
 
-// Mock Data
-const mockMenu: MockMenuItem[] = [
+// 2. Selected Restaurant State
+// Initialize with cart restaurant or the first available restaurant
+const selectedRestaurantId = ref<string | null>(
+  cartRestaurantId.value || (restaurants.value && restaurants.value.length > 0 ? restaurants.value[0].id : null)
+)
+
+// 3. Fetch menu for selected restaurant
+const { data: categorizedMenu, pending: menuPending } = await useFetch<Record<string, MenuItem[]>>(() => 
+  selectedRestaurantId.value ? `${apiBase}/menu/${selectedRestaurantId.value}` : null,
   {
-    id: '1',
-    name: 'Margherita Pizza',
-    description: 'Classic tomato sauce, mozzarella, and fresh basil.',
-    price: 12.99,
-    restaurantId: 'rest-1',
-    restaurantName: 'Pizza Heaven',
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: '2',
-    name: 'Pepperoni Pizza',
-    description: 'Our signature thin crust topped with spicy pepperoni.',
-    price: 14.99,
-    restaurantId: 'rest-1',
-    restaurantName: 'Pizza Heaven',
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: '3',
-    name: 'Classic Burger',
-    description: 'Juicy beef patty with lettuce, tomato, and onion.',
-    price: 9.99,
-    restaurantId: 'rest-2',
-    restaurantName: 'Burger King',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: '4',
-    name: 'Cheeseburger',
-    description: 'Classic burger with melted cheddar cheese.',
-    price: 10.99,
-    restaurantId: 'rest-2',
-    restaurantName: 'Burger King',
-    image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&q=80&w=800'
+    key: `menu-${selectedRestaurantId.value}`,
+    watch: [selectedRestaurantId]
   }
-]
+)
 
-const groupedMenu = computed(() => {
-  const groups: Record<string, { name: string, items: MockMenuItem[] }> = {}
-  mockMenu.forEach(item => {
-    if (!groups[item.restaurantId]) {
-      groups[item.restaurantId] = { name: item.restaurantName, items: [] }
-    }
-    groups[item.restaurantId].items.push(item)
-  })
-  return groups
+const selectedRestaurant = computed(() => 
+  restaurants.value?.find(r => r.id === selectedRestaurantId.value)
+)
+
+const cartRestaurantName = computed(() => {
+  if (!cartRestaurantId.value) return ''
+  const restaurant = restaurants.value?.find(r => r.id === cartRestaurantId.value)
+  return restaurant ? restaurant.name : 'Restaurant'
 })
 
-const currentRestaurantName = computed(() => {
-  if (!restaurantId.value) return ''
-  const item = mockMenu.find(i => i.restaurantId === restaurantId.value)
-  return item ? item.restaurantName : 'Selected Restaurant'
-})
-
-const handleAddItem = (item: MockMenuItem) => {
-  const res = addItem(item, item.image)
+const handleAddItem = (item: MenuItem) => {
+  const res = addItem(item, item.image || '/images/placeholder-food.jpg')
   if (!res.success && res.error === 'DIFFERENT_RESTAURANT') {
     showError.value = true
     // Auto-hide error after 4 seconds
