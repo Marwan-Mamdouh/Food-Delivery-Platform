@@ -77,6 +77,17 @@ export const useCart = () => {
   })
 
   /**
+   * Computed: Items mapped to the structure expected by the backend OrderItemDto.
+   * Maps 'id' to 'menuItemId' to satisfy backend validation.
+   */
+  const backendItems = computed(() => {
+    return cartState.value.items.map((item) => ({
+      menuItemId: item.id,
+      quantity: item.quantity
+    }))
+  })
+
+  /**
    * Adds an item to the cart.
    * @param item The MenuItem to add.
    * @param image An image URL for the item.
@@ -147,6 +158,7 @@ export const useCart = () => {
     itemCount,
     subtotal,
     formattedTotal,
+    backendItems,
     addItem,
     removeItem,
     clearCart
