@@ -11,6 +11,13 @@ export interface PlaceOrderDto {
 	items: OrderItemDto[];
 }
 
+export interface MenuItem {
+	id: string;
+	name: string;
+	price: string | number;
+	image: string | null;
+}
+
 export interface OrderItem {
 	id: string;
 	orderId: string;
@@ -18,6 +25,12 @@ export interface OrderItem {
 	quantity: number;
 	price: string | number;
 	createdAt: string | Date;
+	menuItem?: MenuItem;
+}
+
+export interface Restaurant {
+	id: string;
+	name: string;
 }
 
 export interface Order {
@@ -29,8 +42,15 @@ export interface Order {
 	totalPrice: string | number;
 	address: string;
 	items: OrderItem[];
+	restaurant?: Restaurant;
 	createdAt: string | Date;
 	updatedAt: string | Date;
+}
+
+interface FetchError {
+	data?: { message?: string; paymentStatus?: string };
+	status?: number;
+	statusCode?: number;
 }
 
 export const useOrder = () => {
@@ -38,7 +58,6 @@ export const useOrder = () => {
 	const errorMessage = ref<string | null>(null);
 	const config = useRuntimeConfig();
 	const supabase = useSupabaseClient();
-	const user = useSupabaseUser();
 	const session = useSupabaseSession();
 
 	const getAccessToken = async () => {
@@ -49,7 +68,7 @@ export const useOrder = () => {
 		const { data, error } = await supabase.auth.getSession();
 		if (error || !data.session?.access_token) {
 			throw new Error(
-				"Unable to place order: no authenticated session token available.",
+				"Unable to access orders: no authenticated session token available.",
 			);
 		}
 
@@ -68,11 +87,6 @@ export const useOrder = () => {
 		address: string,
 		items: OrderItemDto[],
 	) => {
-		if (!user.value && !session.value?.access_token) {
-			errorMessage.value = "You must be signed in to place an order.";
-			throw new Error(errorMessage.value);
-		}
-
 		const accessToken = await getAccessToken();
 
 		isLoading.value = true;
@@ -96,12 +110,7 @@ export const useOrder = () => {
 
 			return response;
 		} catch (err: unknown) {
-			// Type-safe error handling for $fetch (Nuxt/OhMyFetch)
-			const fetchError = err as { 
-				data?: { message?: string; paymentStatus?: string }; 
-				status?: number; 
-				statusCode?: number 
-			};
+			const fetchError = err as FetchError;
 			const errorData = fetchError.data;
 			const errorStatus = fetchError.status || fetchError.statusCode;
 
@@ -121,8 +130,47 @@ export const useOrder = () => {
 		}
 	};
 
+	/**
+	 * Fetches all orders for the authenticated user.
+	 * @returns A list of orders.
+	 */
+	const getUserOrders = async () => {
+		const accessToken = await getAccessToken();
+
+		isLoading.value = true;
+		errorMessage.value = null;
+
+		try {
+			const response = await $fetch<Order[]>(
+				`${config.public.apiBaseUrl}/api/orders`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				},
+			);
+
+			return response;
+		} catch (err: unknown) {
+			const fetchError = err as FetchError;
+			const errorStatus = fetchError.status || fetchError.statusCode;
+
+			if (errorStatus === 401) {
+				errorMessage.value = "Authorization failed. Please sign in again.";
+			} else {
+				errorMessage.value = "Failed to fetch orders. Please try again later.";
+			}
+
+			throw err;
+		} finally {
+			isLoading.value = false;
+		}
+	};
+
 	return {
 		placeOrder,
+		getUserOrders,
 		isLoading,
 		errorMessage,
 	};

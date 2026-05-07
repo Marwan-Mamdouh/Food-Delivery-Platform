@@ -7,6 +7,16 @@ import { PaymentStatus, OrderStatus, Prisma } from '@food-delivery/db';
 export class OrderService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findAllByUser(
+    userId: string,
+  ): Promise<Prisma.OrderGetPayload<{ include: { items: true } }>[]> {
+    return this.prisma.order.findMany({
+      where: { userId },
+      include: { items: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   /**
    * Places an order securely by calculating prices server-side
    * and executing all creations within a single transaction.
@@ -81,5 +91,33 @@ export class OrderService {
     });
 
     return createdOrder;
+  }
+
+  /**
+   * Fetches all orders for a specific user, including related restaurant and items.
+   * @param userId The ID of the user.
+   * @returns A list of orders with nested details.
+   */
+  async findAllForUser(
+    userId: string,
+  ): Promise<
+    Prisma.OrderGetPayload<{
+      include: { restaurant: true; items: { include: { menuItem: true } } };
+    }>[]
+  > {
+    return await this.prisma.order.findMany({
+      where: { userId },
+      include: {
+        restaurant: true,
+        items: {
+          include: {
+            menuItem: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }

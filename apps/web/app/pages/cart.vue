@@ -206,10 +206,10 @@ const handleCheckout = async () => {
 
     const order = await placeOrder(restaurantId.value, address.value, orderItems)
 
-    if (order.paymentStatus === 'PAID') {
-      clearCart()
-      navigateTo('/order-success')
-    }
+    // Clear cart and redirect to orders history regardless of payment status
+    // This allows users to see PAID or FAILED status in their history
+    clearCart()
+    navigateTo('/orders')
   } catch (err) {
     // Error is handled by useOrder (errorMessage ref)
     console.error(err);
