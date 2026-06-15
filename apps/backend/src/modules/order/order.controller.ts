@@ -35,19 +35,4 @@ export class OrderController {
 
     return this.orderService.placeOrder(userId, placeOrderDto);
   }
-
-  @Get()
-  @UseGuards(SupabaseAuthGuard)
-  async findAll(@Req() req: AuthRequest): Promise<
-    Prisma.OrderGetPayload<{
-      include: { restaurant: true; items: { include: { menuItem: true } } };
-    }>[]
-  > {
-    const userId = req.user?.userId;
-    if (!userId) {
-      throw new Error('User ID not found in authenticated request');
-    }
-
-    return this.orderService.findAllForUser(userId);
-  }
 }
